@@ -45,3 +45,7 @@ tour %>% select(22:36) -> irina
 
 ## Binary and some overall evaluation variables
 tour %>% select(14:21, 46:52, 63) -> alex  
+
+##Calculating variable importance##
+library(caret)
+rocValues <- filterVarImp(x = tour[-(63)], y=tour2$Book_12Mo)                   
