@@ -1,0 +1,35 @@
+##Alex's cleaning and prep
+
+##creating Optionals_Bin to deal with right-skewed Optionals #####
+mutate(tour, Optionals_Bin = ifelse(Optionals %in% 0, "1",
+                                    ifelse(Optionals %in% 1:5, "2",
+                                           ifelse(Optionals %in% 6:9, "3",
+                                                  ifelse(Optionals %in% 9:12, "4", "5")))))->tour
+############## CLEANING ##########3
+
+#Entering NA's instead of 0's when there is no meaning associated with 0
+need_NA<-c("Recommend_GAT", "TravelAgain", "Groups_Interest", "Reference", "Overall_Impression", "Pre_Departure", "Flight_Itin")
+tour[need_NA] <-sapply(tour[need_NA], function(x) gsub("0", "NA", x))
+
+#Revaluing certain columns from 1's and 2's to 0's and 1's
+library(plyr)
+revalue_cols <- c("Recommend_GAT", "TravelAgain", "Groups_Interest", "Reference")
+tour[revalue_cols] <- sapply(tour[revalue_cols], revalue, replace= c("1"="0", "2"="1"))
+tour[!revalue_cols]
+
+#Making sure that the right columns are factors and intervals
+factor_cols<- c("Recommend_GAT", "TravelAgain", "Groups_Interest", "Reference", "Overall_Impression", "Pre_Departure", "Flight_Itin", "TD_Overall", "Extension", "Insurance", "FltGty", "Complaint_Event", "Voucher_Event", "Book_12Mo")
+numeric_cols<- c("Optionals", "Eval_Contact_Days")
+tour[numeric_cols] <- sapply(tour[numeric_cols], as.numeric)
+tour[factor_cols] <- sapply(tour[factor_cols], as.factor)
+tour <- tour %>%
+  mutate_if(is.character, as.factor)
+  
+##Imputing values for Recommend_GAT, TravelAgain, Groups_Interest, Reference, Overall_Impression, Pre_Departure, Flight_Itin, TD_Overall
+tour.imp <- tour
+tour_impute <- c("Recommend_GAT", "TravelAgain", "Groups_Interest", "Reference", "Overall_Impression", "Pre_Departure", "Flight_Itin", "TD_Overall")
+Mode <- sapply(tour[tour_impute], mode)
+tour.imp[tour_impute]<-as.data.frame(mapply(impute, x=tour[tour_impute]), y=Mode)
+
+#Creating a missing value flag
+tour.imp[c("Recommend_GAT.NA", "TravelAgain.NA", "Groups_Interest.NA", "Reference.NA", "Overall_Impression.NA", "Pre_Departure.NA", "Flight_Itin.NA", "TD_Overall.NA")] <- ifelse(is.na(tour[c("Recommend_GAT", "TravelAgain", "Groups_Interest", "Reference", "Overall_Impression", "Pre_Departure", "Flight_Itin", "TD_Overall")]), 1, 0)
