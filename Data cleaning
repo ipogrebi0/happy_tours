@@ -1,0 +1,20 @@
+# happy_tours: Same code as James produced in allocation of variables
+library(readr)
+library(dplyr)
+library(fBasics)
+library(Hmisc)
+library(Amelia)
+setwd("C:\\Users\\pogrebivskyi\\OneDrive\\Villanova\\Data Mining\\Project")
+tour <- read_csv("modeling_data.csv")
+drop.vars <- c(grep("ID$|Trip_no|Grp_Size_Cat|^(Poor|Fair|Good|Excellent)", names(tour)))
+tour %>%
+  mutate("Hotel_3orAbove" = Good_Hotels + Excellent_Hotels,
+         "Meals_3orAbove" = Good_Meals + Excellent_Meals,
+         "GUSS_3orAbove" = Good_GUSS + Excellent_GUSS,
+         "Optionals_3orAbove" = Good_Optionals + Excellent_Optionals,
+         "Bus_3orAbove" = Good_Buses + Excellent_Buses) %>%
+  select(-drop.vars, -contains("Gateway")) %>%
+  select(1:31, 59:63, everything()) -> tour
+## Evaluation variables
+tour %>% select(22:36) -> irina
+
