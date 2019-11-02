@@ -18,3 +18,8 @@ tour %>%
 ## Evaluation variables
 tour %>% select(22:36) -> irina
 
+#fix of code from Alex Cleaning#
+Mode <- sapply(tour.imp[tour_impute], mode)
+tour.imp[tour_impute]<-as.data.frame(mapply(impute, x=tour.imp[tour_impute], y=Mode))
+
+
