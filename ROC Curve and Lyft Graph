@@ -1,0 +1,30 @@
+### ROC curves ###
+library(pROC)
+rocCurve.reg.step<- roc(tour.mdl[!split,vars]$Book_12Mo, reg.step.prob)
+rocCurve.reg.bwd<- roc(tour.mdl[!split,vars]$Book_12Mo, reg.bwd.prob)
+rocCurve.reg.fwd<- roc(tour.mdl[!split,vars]$Book_12Mo, reg.fwd.prob)
+c(auc(rocCurve.reg.step),auc(rocCurve.reg.bwd),auc(rocCurve.reg.fwd))
+
+## Model Evaluation: Lift Graph ##
+
+
+evaluate.prob<-predict(reg.bwd,tour.mdl[!split, vars], type = "response")
+train.prob <- predict(reg.bwd, tour.mdl[split,vars], type = "response")
+
+#install.packages("ROCR")
+library(ROCR)
+pred.eva <- prediction(evaluate.prob, tour.mdl[!split,vars]$Book_12Mo)
+
+pred<-prediction(train.prob, tour.mdl[split,vars]$Book_12Mo)
+
+perf.eva <- performance(pred.eva,"lift","rpp")
+perf <- performance(pred,"lift","rpp")
+
+plot(perf, col='blue', type="b", main="Lift Curve")
+plot(perf.eva, col= 'red', type="b",add = TRUE,main="Lift Curve")
+legend('topright', legend=c('train', 'validation'), col=c("blue","red"),lty=c(1,1))
+
+
+plot(perf, col='blue', type="b", main="Lift Curve")
+plot(perf.eva, col= 'red', type="b",add = TRUE,main="Lift Curve")
+legend('topright', legend=c('train', 'validation'), col=c("blue","red"),lty=c(1,1))
