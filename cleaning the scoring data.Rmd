@@ -223,10 +223,16 @@ tour.imp2[index.cat]<-as.data.frame(mapply(impute,x=tour.imp2[index.cat],y = Mod
 tour.imp2[paste(names(tour.final)[index.na], "NA", sep=".")] <- ifelse(
   is.na(tour.final[index.na]), 1, 0)
 tour.imp2[grep("NA$",names(tour.imp2))]<-lapply(
-  tour.imp2[grep("NA$",names(tour.imp2))], as.factor) 
-
-
+  tour.imp2[grep("NA$",names(tour.imp2))], as.factor)
 tour.imp2 -> tour.score
+
+#Creates missing value flags for the four variables that had misssings in the training but not the scoring data#
+tour.score <- tour.score %>%
+  mutate(Book_Months_num.NA = as.factor(0),
+    Optionals_Bin.NA = as.factor(0),
+    TourWeek.NA = as.factor(0),
+    Tour_Region.binned.NA = as.factor(0))
+
 
 save(tour.score, file="scoring_cleaned.RData")
 
